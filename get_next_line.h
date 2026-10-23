@@ -6,7 +6,7 @@
 /*   By: mibaboul <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:52:08 by mibaboul          #+#    #+#             */
-/*   Updated: 2026/10/23 01:59:05 by mibaboul         ###   ########.fr       */
+/*   Updated: 2026/10/23 04:27:50 by mibaboul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+# ifndef BUFFER_SIZE
 # define BUFFER_SIZE 42
 
 typedef struct s_list
