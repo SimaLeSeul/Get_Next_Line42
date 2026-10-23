@@ -6,7 +6,7 @@
 /*   By: mibaboul <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:52:08 by mibaboul          #+#    #+#             */
-/*   Updated: 2026/10/23 04:27:50 by mibaboul         ###   ########.fr       */
+/*   Updated: 2026/10/23 04:40:33 by mibaboul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 # include <unistd.h>
 
 # ifndef BUFFER_SIZE
-# define BUFFER_SIZE 42
+#  define BUFFER_SIZE 42
+# endif
 
 typedef struct s_list
 {
@@ -26,4 +27,14 @@ typedef struct s_list
 }	t_list;
 
 char	*get_next_line(int fd);
+int		nlchr(char *str);
+size_t	my_strlen(const char *str);
+char	*my_strjoin(const char *s1, const char *s2);
+size_t	my_strnlen(const char *str);
+void	*my_memcpy(void *dst, const void *src, size_t n);
+char	*extract_line(const char *stash);
+char	*extract_rest(const char *stash);
+char	*append_to_stash(char *stash, char *buffer);
+char	*read_to_stash(int fd, char *stash);
+
 #endif
