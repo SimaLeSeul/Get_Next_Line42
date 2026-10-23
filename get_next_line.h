@@ -6,7 +6,7 @@
 /*   By: mibaboul <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:52:08 by mibaboul          #+#    #+#             */
-/*   Updated: 2026/10/23 04:40:33 by mibaboul         ###   ########.fr       */
+/*   Updated: 2026/10/23 04:48:07 by mibaboul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_list
 }	t_list;
 
 char	*get_next_line(int fd);
-int		nlchr(char *str);
+char	*clear_stash(char **stash, char *line);
 size_t	my_strlen(const char *str);
 char	*my_strjoin(const char *s1, const char *s2);
 size_t	my_strnlen(const char *str);

@@ -6,7 +6,7 @@
 /*   By: mibaboul <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 15:51:32 by mibaboul          #+#    #+#             */
-/*   Updated: 2026/10/23 04:33:09 by mibaboul         ###   ########.fr       */
+/*   Updated: 2026/10/23 04:48:07 by mibaboul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ char	*extract_line(const char *stash)
 		return (NULL);
 	my_memcpy(res, stash, len);
 	res[len] = '\0';
-
 	return (res);
 }
 
@@ -49,7 +48,7 @@ char	*extract_rest(const char *stash)
 	return (res);
 }
 
-char *append_to_stash(char *stash, char *buffer)
+char	*append_to_stash(char *stash, char *buffer)
 {
 	char	*tmp;
 
@@ -70,18 +69,14 @@ char	*read_to_stash(int fd, char *stash)
 
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
-	{
-		free(stash);
-		return (NULL);
-	}
-	while (!nlchr(stash))
+		return (clear_stash(&stash, NULL));
+	while (!stash || !*stash || stash[my_strnlen(stash) - 1] != '\n')
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
 		{
-			free(stash);
 			free(buffer);
-			return (NULL);
+			return (clear_stash(&stash, NULL));
 		}
 		if (bytes_read == 0)
 			break ;
@@ -107,19 +102,10 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = extract_line(stash);
 	if (!line)
-	{
-		free(stash);
-		stash = NULL;
-		return (NULL);
-	}
+		return (clear_stash(&stash, NULL));
 	tmp = extract_rest(stash);
-	if (!tmp)
-	{
-		free(line);
-		free(stash);
-		stash = NULL;
-		return (NULL);
-	}
+	if (!tmp && stash[my_strnlen(stash)] != '\0')
+		return (clear_stash(&stash, line));
 	free(stash);
 	stash = tmp;
 	return (line);

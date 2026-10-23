@@ -6,27 +6,18 @@
 /*   By: mibaboul <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/16 17:16:48 by mibaboul          #+#    #+#             */
-/*   Updated: 2026/10/23 04:33:15 by mibaboul         ###   ########.fr       */
+/*   Updated: 2026/10/23 04:48:07 by mibaboul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	nlchr(char *str)
+char	*clear_stash(char **stash, char *line)
 {
-	size_t	i;
-
-	i = 0;
-	if (str)
-	{
-		while (str[i])
-		{
-			if (str[i] == '\n')
-				return (1);
-			i++;
-		}
-	}
-	return (0);
+	free(line);
+	free(*stash);
+	*stash = NULL;
+	return (NULL);
 }
 
 size_t	my_strlen(const char *str)
@@ -97,4 +88,3 @@ size_t	my_strnlen(const char *str)
 	}
 	return (i);
 }
-
