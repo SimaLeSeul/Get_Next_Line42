@@ -48,7 +48,7 @@ char	*extract_rest(const char *stash)
 	return (res);
 }
 
-char	*append_to_stash(char *stash, char *buffer)
+char	*free_join(char *stash, char *buffer)
 {
 	char	*tmp;
 
@@ -67,7 +67,7 @@ char	*read_to_stash(int fd, char *stash)
 	ssize_t		bytes_read;
 	char		*buffer;
 
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	buffer = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buffer)
 		return (clear_stash(&stash, NULL));
 	while (!stash || !*stash || stash[my_strnlen(stash) - 1] != '\n')
@@ -81,7 +81,7 @@ char	*read_to_stash(int fd, char *stash)
 		if (bytes_read == 0)
 			break ;
 		buffer[bytes_read] = '\0';
-		stash = append_to_stash(stash, buffer);
+		stash = free_join(stash, buffer);
 		if (!stash)
 			break ;
 	}

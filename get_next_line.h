@@ -34,7 +34,7 @@ size_t	my_strnlen(const char *str);
 void	*my_memcpy(void *dst, const void *src, size_t n);
 char	*extract_line(const char *stash);
 char	*extract_rest(const char *stash);
-char	*append_to_stash(char *stash, char *buffer);
+char	*free_join(char *stash, char *buffer);
 char	*read_to_stash(int fd, char *stash);
 
 #endif
