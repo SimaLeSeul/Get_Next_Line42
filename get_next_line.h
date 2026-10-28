@@ -20,20 +20,10 @@
 #  define BUFFER_SIZE 42
 # endif
 
-typedef struct s_list
-{
-	char			*content;
-	struct s_list	*next;
-}	t_list;
-
 char	*get_next_line(int fd);
 char	*clear_stash(char **stash, char *line);
-size_t	my_strlen(const char *str);
-char	*my_strjoin(const char *s1, const char *s2);
-size_t	my_strnlen(const char *str);
-void	*my_memcpy(void *dst, const void *src, size_t n);
-char	*extract_line(const char *stash);
-char	*extract_rest(const char *stash);
+size_t	my_strlen(const char *str, int line);
+char	*extract_line(char **stash);
 char	*free_join(char *stash, char *buffer);
 char	*read_to_stash(int fd, char *stash);
 

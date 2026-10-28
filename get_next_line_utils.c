@@ -20,71 +20,93 @@ char	*clear_stash(char **stash, char *line)
 	return (NULL);
 }
 
-size_t	my_strlen(const char *str)
+size_t	my_strlen(const char *str, int line)
 {
 	size_t	i;
 
 	i = 0;
-	while (str[i])
+	while (str && str[i])
+	{
+		if (line && str[i] == '\n')
+			return (i + 1);
 		i++;
+	}
 	return (i);
 }
 
-void	*my_memcpy(void *dst, const void *src, size_t n)
-{
-	size_t				i;
-	unsigned char		*tmpdst;
-	const unsigned char	*tmpsrc;
-
-	if (!dst && !src)
-		return (dst);
-	i = 0;
-	tmpsrc = (const unsigned char *)src;
-	tmpdst = (unsigned char *)dst;
-	while (i < n)
-	{
-		tmpdst[i] = tmpsrc[i];
-		i++;
-	}
-	return (dst);
-}
-
-char	*my_strjoin(const char *s1, const char *s2)
+char	*free_join(char *stash, char *buffer)
 {
 	char	*res;
-	size_t	len1;
-	size_t	len2;
+	size_t	len;
+	size_t	i;
 
-	len1 = 0;
-	if (!s1 && !s2)
-		return (NULL);
-	if (s1)
-		len1 = my_strlen(s1);
-	len2 = my_strlen(s2);
-	res = malloc((len1 + len2 + 1) * sizeof(char));
+	len = my_strlen(stash, 0);
+	res = malloc(len + my_strlen(buffer, 0) + 1);
 	if (!res)
-		return (NULL);
-	my_memcpy(res, s1, len1);
-	my_memcpy(res + len1, s2, len2);
-	res[len1 + len2] = '\0';
+		return (clear_stash(&stash, NULL));
+	i = 0;
+	while (i < len)
+	{
+		res[i] = stash[i];
+		i++;
+	}
+	i = 0;
+	while (buffer[i])
+	{
+		res[len + i] = buffer[i];
+		i++;
+	}
+	res[len + i] = '\0';
+	free(stash);
 	return (res);
 }
 
-size_t	my_strnlen(const char *str)
+char	*read_to_stash(int fd, char *stash)
 {
-	size_t	i;
+	ssize_t	bytes_read;
+	char	*buffer;
 
-	i = 0;
-	if (!str)
-		return (0);
-	while (str[i])
+	buffer = malloc((size_t)BUFFER_SIZE + 1);
+	if (!buffer)
+		return (clear_stash(&stash, NULL));
+	while (!stash || !*stash || stash[my_strlen(stash, 1) - 1] != '\n')
 	{
-		if (str[i] == '\n')
-		{
-			i++;
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read == -1)
+			return (clear_stash(&stash, buffer));
+		if (bytes_read == 0)
 			break ;
-		}
+		buffer[bytes_read] = '\0';
+		stash = free_join(stash, buffer);
+		if (!stash)
+			break ;
+	}
+	free(buffer);
+	return (stash);
+}
+
+char	*extract_line(char **stash)
+{
+	size_t	len;
+	size_t	i;
+	char	*line;
+
+	len = my_strlen(*stash, 1);
+	line = malloc(len + 1);
+	if (!line)
+		return (clear_stash(stash, NULL));
+	i = len;
+	line[i] = '\0';
+	while (i-- > 0)
+		line[i] = (*stash)[i];
+	i = 0;
+	while ((*stash)[len + i])
+	{
+		(*stash)[i] = (*stash)[len + i];
 		i++;
 	}
-	return (i);
+	(*stash)[i] = '\0';
+	if (!**stash)
+		clear_stash(stash, NULL);
+	return (line);
 }

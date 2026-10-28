@@ -54,11 +54,11 @@ This implementation follows a **dynamic string accumulation** approach rather th
 
 The algorithm is organized as follows:
 
-1. **Validate the inputs.** Reject invalid file descriptors and non-positive buffer sizes.
+1. **Validate the inputs.** Reject negative file descriptors and non-positive buffer sizes. A zero-byte `read()` also checks the descriptor before returning buffered data. Clear the stash on an error.
 2. **Accumulate data.** Check whether the stash already contains a newline. If not, read up to `BUFFER_SIZE` bytes into a temporary buffer. Use the actual number of bytes returned by `read()` and append the data to the stash.
 3. **Stop reading at the right moment.** Stop when the stash contains a newline, when `read()` returns `0` (end of file), or when an error occurs. The function does not intentionally read the whole file before returning its first line.
 4. **Extract one line.** Determine the length of the first line, including its newline if present. Allocate a separate string and copy only that line into it.
-5. **Preserve the remainder.** Copy any characters after the extracted line into a new stash for the next call. If no characters remain, clear the stash.
+5. **Preserve the remainder.** Shift any characters after the extracted line to the beginning of the existing stash for the next call. If no characters remain, free and clear the stash.
 6. **Manage ownership.** Release old temporary allocations and the previous stash when replacing them. The returned line remains owned by the caller. Handle allocation and reading errors without leaving inaccessible allocations.
 
 ### Why this approach?
@@ -69,7 +69,28 @@ The trade-off is that repeated string concatenation may allocate and copy data m
 
 ### Helper functions
 
-The implementation is divided into small operations, string length and copying helpers, string concatenation (`my_strjoin`), extraction of the current line (`extract_line`), extraction of unread data (`extract_rest`), and reading into the persistent stash (`read_to_stash`). Exact placement of helpers depends on the final source organization.
+All five helper functions are in `get_next_line_utils.c`: length calculation (`my_strlen`), concatenation with ownership transfer (`free_join`), reading (`read_to_stash`), line extraction and preservation of unread data (`extract_line`), and cleanup (`clear_stash`). This keeps the file within the Norm's five-function limit. `get_next_line.c` contains only the public entry point.
+
+## Bonus
+
+The bonus implementation uses one static array of stashes, indexed by file
+descriptor. Calls can alternate between different descriptors while preserving
+each file's unread data. EOF or an error clears only the affected descriptor's
+stash. Descriptors must be between `0` and `FD_LIMIT - 1`; `FD_LIMIT` defaults
+to `10240` in `get_next_line_bonus.h`. Override it at compilation with, for
+example, `-D FD_LIMIT=65536`.
+
+Compile the bonus separately, using a test program that includes
+`get_next_line_bonus.h`:
+
+```sh
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line_bonus.c get_next_line_utils_bonus.c test.c -o gnl_bonus_test
+./gnl_bonus_test
+```
+
+As with the mandatory implementation, read each descriptor to EOF to release
+its remaining stash. Closing a descriptor without another call does not notify
+the function; reusing its number before clearing its stash can retain old data.
 
 ## Resources
 
@@ -82,6 +103,9 @@ The implementation is divided into small operations, string length and copying h
 ### AI usage
 
 AI was used as a learning aid to review C concepts, including static variables, pointers, `read()`, buffer management, and dynamic allocation. It also helped review intermediate implementations, identify possible memory errors and edge cases, and discuss algorithm design and testing strategies. The project code was developed iteratively by the student.
+
+AI assistance was also used to implement the bonus adaptation for multiple file
+descriptors and to develop and run sanitizer and fault-injection tests.
 
 ## Testing Considerations
 
