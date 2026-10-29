@@ -15,9 +15,8 @@
 char	*get_next_line(int fd)
 {
 	static char	*stash;
-	char		buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (clear_stash(&stash, NULL));
 	stash = read_to_stash(fd, stash);
 	if (!stash || !*stash)

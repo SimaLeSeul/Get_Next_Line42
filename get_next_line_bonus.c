@@ -15,11 +15,10 @@
 char	*get_next_line(int fd)
 {
 	static char	*stash[FD_LIMIT];
-	char		buffer;
 
 	if (fd < 0 || fd >= FD_LIMIT)
 		return (NULL);
-	if (BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+	if (BUFFER_SIZE <= 0)
 		return (clear_stash(&stash[fd], NULL));
 	stash[fd] = read_to_stash(fd, stash[fd]);
 	if (!stash[fd] || !*stash[fd])

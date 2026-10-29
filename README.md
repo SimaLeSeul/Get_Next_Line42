@@ -54,7 +54,7 @@ This implementation follows a **dynamic string accumulation** approach rather th
 
 The algorithm is organized as follows:
 
-1. **Validate the inputs.** Reject negative file descriptors and non-positive buffer sizes. A zero-byte `read()` also checks the descriptor before returning buffered data. Clear the stash on an error.
+1. **Validate the inputs.** Reject negative file descriptors and non-positive buffer sizes. Handle read errors during data accumulation and clear the affected stash. Every `read()` requests exactly `BUFFER_SIZE` bytes.
 2. **Accumulate data.** Check whether the stash already contains a newline. If not, read up to `BUFFER_SIZE` bytes into a temporary buffer. Use the actual number of bytes returned by `read()` and append the data to the stash.
 3. **Stop reading at the right moment.** Stop when the stash contains a newline, when `read()` returns `0` (end of file), or when an error occurs. The function does not intentionally read the whole file before returning its first line.
 4. **Extract one line.** Determine the length of the first line, including its newline if present. Allocate a separate string and copy only that line into it.
