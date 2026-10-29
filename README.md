@@ -104,9 +104,6 @@ the function; reusing its number before clearing its stash can retain old data.
 
 AI was used as a learning aid to review C concepts, including static variables, pointers, `read()`, buffer management, and dynamic allocation. It also helped review intermediate implementations, identify possible memory errors and edge cases, and discuss algorithm design and testing strategies. The project code was developed iteratively by the student.
 
-AI assistance was also used to implement the bonus adaptation for multiple file
-descriptors and to develop and run sanitizer and fault-injection tests.
-
 ## Testing Considerations
 
 Useful checks include empty files, files with and without a final newline, consecutive newlines, very long lines, different `BUFFER_SIZE` values, standard input, invalid file descriptors, and allocation or read failures. Memory-management checks are especially important for detecting leaks, double frees, and invalid accesses.
